@@ -1,0 +1,76 @@
+# Setup: uv sync && uv run prek install
+
+repos:
+  # Generic file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-merge-conflict
+        fail_fast: true
+      - id: check-case-conflict
+      - id: fix-byte-order-marker
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+        args: [--fix=auto]
+      - id: check-json
+      - id: check-toml
+      - id: check-xml
+      - id: check-yaml
+        args: [--allow-multiple-documents]
+      - id: check-added-large-files
+        args: [--maxkb=2000]
+      - id: check-illegal-windows-names
+
+  # Python lint and format ([tool.ruff] in pyproject.toml)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.17.4
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format
+
+  # Keep uv.lock in sync with pyproject.toml
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.13.7
+    hooks:
+      - id: uv-lock
+
+  # pyproject.toml against the packaging schemas (tools check their own tables)
+  - repo: https://github.com/abravalheri/validate-pyproject
+    rev: v0.27
+    hooks:
+      - id: validate-pyproject
+
+  # Format Markdown (wrapped at 88), YAML, JSON
+  - repo: https://github.com/rbubley/mirrors-prettier
+    rev: v3.9.10
+    hooks:
+      - id: prettier
+
+  # Spelling (exceptions in [tool.codespell])
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.4.3
+    hooks:
+      - id: codespell
+        additional_dependencies: [tomli]
+        args: ["--builtin=clear,rare,en-GB_to_en-US"] # American spelling
+
+  - repo: local
+    hooks:
+      # Type checking ([tool.ty])
+      - id: ty
+        name: ty
+        entry: uv run --frozen ty check --error-on-warning --error unused-ignore-comment
+        language: system
+        types_or: [python, pyi]
+        pass_filenames: false
+
+      # Tests against the mocked API
+      - id: pytest
+        name: pytest
+        entry: uv run --frozen pytest -q
+        language: system
+        types_or: [python, pyi]
+        pass_filenames: false

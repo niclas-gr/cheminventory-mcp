@@ -1,0 +1,86 @@
+[project]
+name = "cheminventory-mcp"
+version = "1.0.0"
+description = "MCP server for the ChemInventory chemical inventory API"
+readme = "README.md"
+license = "AGPL-3.0-or-later"
+license-files = ["LICENSE"]
+authors = [{ name = "Niclas Grocholski" }]
+keywords = ["mcp", "model-context-protocol", "cheminventory", "chemical-inventory"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Chemistry",
+]
+requires-python = ">=3.13"
+dependencies = [
+    "httpx>=0.28.1,<1",
+    "mcp>=2.3,<3",
+    "pydantic>=2.14,<3",
+    "pymupdf>=2.1,<3",
+    "rapidocr>=3.10,<4",
+]
+
+[project.urls]
+Repository = "https://github.com/niclas-gr/cheminventory-mcp"
+Issues = "https://github.com/niclas-gr/cheminventory-mcp/issues"
+
+[project.scripts]
+cheminventory-mcp = "cheminventory_mcp.server:main"
+
+[build-system]
+requires = ["uv_build>=0.13.7,<0.14.0"]
+build-backend = "uv_build"
+
+[tool.uv]
+exclude-newer = "7 days"
+exclude-newer-package = { ty = false } # pre-1.0, released weekly by Astral
+
+[dependency-groups]
+dev = [
+    "anyio>=4.16.0",
+    "prek>=0.5.10",
+    "pytest>=9.2.0",
+    "respx>=0.23.1",
+    "ty>=0.0.100",
+]
+
+[tool.ruff.lint]
+select = [
+    "E", "W",   # pycodestyle
+    "F",        # pyflakes
+    "I",        # isort
+    "UP",       # pyupgrade
+    "B",        # flake8-bugbear
+    "A",        # flake8-builtins
+    "C4",       # flake8-comprehensions
+    "N",        # pep8-naming
+    "S",        # bandit
+    "PLE2502",  # bidirectional unicode
+    "ASYNC",    # flake8-async
+    "BLE001",   # blind except: catching Exception/BaseException without re-raising
+    "ANN",      # flake8-annotations
+    "RUF100",   # unused noqa
+]
+ignore = [
+    "E501",   # line length is the formatter's job
+    "UP040",  # keep TypeAlias annotations instead of `type` statements
+    "ANN401", # explicit Any, e.g. for untyped API JSON
+]
+# Autofix only import order and pyupgrade
+fixable = ["I", "UP"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101", "S105", "S106", "ASYNC240"] # asserts, dummy secrets, blocking file checks
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = ["error"]
+
+[tool.ty.src]
+include = ["src", "tests"]

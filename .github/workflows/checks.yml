@@ -1,0 +1,22 @@
+# All hooks of .pre-commit-config.yaml, run by prek, including ty and the tests
+name: checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: astral-sh/setup-uv@v10.3.3
+        with:
+          enable-cache: true
+      - uses: actions/cache@v6.1.0
+        with:
+          path: ~/.cache/prek
+          key: prek-${{ hashFiles('.pre-commit-config.yaml') }}
+      - run: uv sync --frozen
+      - run: uv run --frozen prek run --all-files --show-diff-on-failure
