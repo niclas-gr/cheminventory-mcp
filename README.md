@@ -41,15 +41,7 @@ The server prints nothing and waits for an MCP client on standard input; stop it
 
 ## API token
 
-A user with _Group Administrator_ privileges creates tokens on the _Inventory Management_ page under _Inventory Tools > API Tokens_. Each token is tied to one user account and has exactly that user's privileges, so a token tied to a read-only account gives read-only access. The token is shown only once; revoke it and create a new one if it is lost.
-
-## Security
-
-The token gives the MCP client the full privileges of its user, so tie it to the least-privileged account that suffices, such as a read-only account for lookups. Inventory data that tools return is passed to the AI model and its provider, and text stored in the inventory (names, comments, custom fields, file contents) can contain instructions that the model might follow. Keep confirmation prompts on for destructive tools, and set `CHEMINVENTORY_ACCESS` (see [Configuration](https://github.com/niclas-gr/cheminventory-mcp#configuration)) to hide the tools you do not need. That setting is a second layer on top of the account's privileges: it limits what the AI client can do, but the token itself can still do everything its account can.
-
-## Privacy
-
-The server runs on your computer and keeps no data. It sends requests only to your ChemInventory installation and, for `file_content` and `save_files`, to the file host that ChemInventory's download links point to. Whatever a tool returns goes to your AI client and from there to its model provider, under that provider's terms. There is no telemetry or analytics.
+A user with _Group Administrator_ privileges creates tokens on the _Inventory Management_ page under _Inventory Tools > API Tokens_. Each token is tied to one user account and has exactly that user's privileges, so a token tied to a read-only account gives read-only access. The token is shown only once; revoke it and create a new one if it is lost. Tie it to the least-privileged account that suffices, such as a read-only account for lookups (see [Security](https://github.com/niclas-gr/cheminventory-mcp#security)).
 
 ## Connect an MCP client
 
@@ -136,6 +128,14 @@ The server provides 71 tools for the 70 API endpoints; `export_containers` cover
 `get_substance` creates the substance if it does not exist yet, and `generate_barcodes` can change the inventory's barcode prefix. Some tools need administrator privileges or a site or enterprise license; the API rejects them otherwise.
 
 `file_content` and `save_files` download files from the file store on the computer that runs the server, so they also work where the AI client itself has no network access. `file_content` returns PDFs and other documents as Markdown or plain text, using PyMuPDF's layout analysis for reading order, headings and tables, with page headers and footers removed unless requested; scanned pages are read with OCR ([RapidOCR](https://github.com/RapidAI/RapidOCR), included). Pages and a character limit can be selected. Text files are returned as text and images as images; other formats such as Word files can only be saved. `save_files` writes files to a local folder and never overwrites existing files.
+
+## Security
+
+The token gives the MCP client the full privileges of its user, so tie it to the least-privileged account that suffices, such as a read-only account for lookups. Inventory data that tools return is passed to the AI model and its provider, and text stored in the inventory (names, comments, custom fields, file contents) can contain instructions that the model might follow. Keep confirmation prompts on for destructive tools, and set `CHEMINVENTORY_ACCESS` (see [Configuration](https://github.com/niclas-gr/cheminventory-mcp#configuration)) to hide the tools you do not need. That setting is a second layer on top of the account's privileges: it limits what the AI client can do, but the token itself can still do everything its account can.
+
+## Privacy
+
+The server runs on your computer and keeps no data. It sends requests only to your ChemInventory installation and, for `file_content` and `save_files`, to the file host that ChemInventory's download links point to. Whatever a tool returns goes to your AI client and from there to its model provider, under that provider's terms. There is no telemetry or analytics.
 
 ## Development
 
