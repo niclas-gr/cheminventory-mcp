@@ -133,7 +133,7 @@ async def test_stdio_entry_point(access: str, available: set[str]) -> None:
         )
 
     assert {tool.name for tool in tools} == available
-    assert version == "1.0.0"
+    assert version == "1.0.1"
 
 
 @pytest.mark.anyio

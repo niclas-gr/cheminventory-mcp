@@ -14,7 +14,7 @@ The server is published on [PyPI](https://pypi.org/project/cheminventory-mcp/) a
 
 **Run on demand (recommended).** MCP clients start the server with `uvx cheminventory-mcp`, which downloads the package into an isolated, cached environment on first use. Nothing else needs to be installed; continue with [Connect an MCP client](https://github.com/niclas-gr/cheminventory-mcp#connect-an-mcp-client).
 
-- Pin a version with `uvx cheminventory-mcp@1.0.0`
+- Pin a version with `uvx cheminventory-mcp@1.0.1`
 - Get the newest release with `uvx cheminventory-mcp@latest`
 
 **Install permanently.** To put a `cheminventory-mcp` command on the `PATH` instead:
@@ -41,11 +41,7 @@ The server prints nothing and waits for an MCP client on standard input; stop it
 
 ## API token
 
-A user with _Group Administrator_ privileges creates tokens on the _Inventory Management_ page under _Inventory Tools > API Tokens_. Each token is tied to one user account and has exactly that user's privileges, so a token tied to a read-only account gives read-only access. The token is shown only once; revoke it and create a new one if it is lost.
-
-## Security
-
-The token gives the MCP client the full privileges of its user, so tie it to the least-privileged account that suffices, such as a read-only account for lookups. Inventory data that tools return is passed to the AI model and its provider, and text stored in the inventory (names, comments, custom fields, file contents) can contain instructions that the model might follow. Keep confirmation prompts on for destructive tools, and set `CHEMINVENTORY_ACCESS` (see [Configuration](https://github.com/niclas-gr/cheminventory-mcp#configuration)) to hide the tools you do not need. That setting is a second layer on top of the account's privileges: it limits what the AI client can do, but the token itself can still do everything its account can.
+A user with _Group Administrator_ privileges creates tokens on the _Inventory Management_ page under _Inventory Tools > API Tokens_. Each token is tied to one user account and has exactly that user's privileges, so a token tied to a read-only account gives read-only access. The token is shown only once; revoke it and create a new one if it is lost. Tie it to the least-privileged account that suffices, such as a read-only account for lookups (see [Security](https://github.com/niclas-gr/cheminventory-mcp#security)).
 
 ## Connect an MCP client
 
@@ -62,7 +58,9 @@ Add `--scope user` to make the server available in all projects.
 
 ### Claude Desktop
 
-Open _Settings > Developer > Edit Config_ and add the server to `claude_desktop_config.json`, then restart Claude Desktop:
+Download [`cheminventory-mcp.mcpb`](https://github.com/niclas-gr/cheminventory-mcp/releases/latest/download/cheminventory-mcp.mcpb) from the latest release and open it, or drag it into the Claude Desktop window. Claude Desktop shows an installation dialog that asks for the API token and, optionally, the installation URL and [access level](https://github.com/niclas-gr/cheminventory-mcp#configuration); the token is stored as a secret. uv must be installed (see [Installation](https://github.com/niclas-gr/cheminventory-mcp#installation)).
+
+To configure it by hand instead, open _Settings > Developer > Edit Config_ and add the server to `claude_desktop_config.json`, then restart Claude Desktop:
 
 ```json
 {
@@ -89,6 +87,12 @@ codex mcp add cheminventory --env CHEMINVENTORY_TOKEN=<token> -- uvx cheminvento
 Add the server to `~/.gemini/settings.json` (all projects) or `.gemini/settings.json` (one project), using the same `mcpServers` entry as for Claude Desktop.
 
 ### Other clients and versions
+
+With Node.js installed, [add-mcp](https://www.npmjs.com/package/add-mcp) writes the configuration for many other clients, such as Cursor, VS Code, Windsurf, Cline or Zed, and asks which ones to set up:
+
+```bash
+npx add-mcp "uvx cheminventory-mcp" --env "CHEMINVENTORY_TOKEN=<token>" -g
+```
 
 Any MCP client that starts stdio servers works with `uvx cheminventory-mcp`. To run the latest unreleased code, use `uvx --from git+https://github.com/niclas-gr/cheminventory-mcp cheminventory-mcp`; for a local checkout, use `uv run --directory /path/to/cheminventory-mcp cheminventory-mcp`.
 
@@ -124,6 +128,14 @@ The server provides 71 tools for the 70 API endpoints; `export_containers` cover
 `get_substance` creates the substance if it does not exist yet, and `generate_barcodes` can change the inventory's barcode prefix. Some tools need administrator privileges or a site or enterprise license; the API rejects them otherwise.
 
 `file_content` and `save_files` download files from the file store on the computer that runs the server, so they also work where the AI client itself has no network access. `file_content` returns PDFs and other documents as Markdown or plain text, using PyMuPDF's layout analysis for reading order, headings and tables, with page headers and footers removed unless requested; scanned pages are read with OCR ([RapidOCR](https://github.com/RapidAI/RapidOCR), included). Pages and a character limit can be selected. Text files are returned as text and images as images; other formats such as Word files can only be saved. `save_files` writes files to a local folder and never overwrites existing files.
+
+## Security
+
+The token gives the MCP client the full privileges of its user, so tie it to the least-privileged account that suffices, such as a read-only account for lookups. Inventory data that tools return is passed to the AI model and its provider, and text stored in the inventory (names, comments, custom fields, file contents) can contain instructions that the model might follow. Keep confirmation prompts on for destructive tools, and set `CHEMINVENTORY_ACCESS` (see [Configuration](https://github.com/niclas-gr/cheminventory-mcp#configuration)) to hide the tools you do not need. That setting is a second layer on top of the account's privileges: it limits what the AI client can do, but the token itself can still do everything its account can.
+
+## Privacy
+
+The server runs on your computer and keeps no data. It sends requests only to your ChemInventory installation and, for `file_content` and `save_files`, to the file host that ChemInventory's download links point to. Whatever a tool returns goes to your AI client and from there to its model provider, under that provider's terms. There is no telemetry or analytics.
 
 ## Development
 

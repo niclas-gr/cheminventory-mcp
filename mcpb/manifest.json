@@ -1,0 +1,59 @@
+{
+  "manifest_version": "0.4",
+  "name": "cheminventory-mcp",
+  "display_name": "ChemInventory",
+  "version": "1.0.1",
+  "description": "Search and manage a ChemInventory chemical inventory through its API",
+  "long_description": "Search containers by name, CAS number or structure, read and update containers, substances, orders, files, users and watchlists, and read safety data sheets from the file store. Not affiliated with ChemInventory. Requires uv (https://docs.astral.sh/uv/).",
+  "author": { "name": "Niclas Grocholski" },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/niclas-gr/cheminventory-mcp"
+  },
+  "homepage": "https://github.com/niclas-gr/cheminventory-mcp",
+  "documentation": "https://github.com/niclas-gr/cheminventory-mcp#readme",
+  "support": "https://github.com/niclas-gr/cheminventory-mcp/issues",
+  "license": "AGPL-3.0-or-later",
+  "privacy_policies": ["https://github.com/niclas-gr/cheminventory-mcp#privacy"],
+  "keywords": ["chemical inventory", "cheminventory", "chemistry", "laboratory"],
+  "server": {
+    "type": "uv",
+    "entry_point": "",
+    "mcp_config": {
+      "command": "uv",
+      "args": ["tool", "run", "--no-build", "cheminventory-mcp==1.0.1"],
+      "env": {
+        "CHEMINVENTORY_TOKEN": "${user_config.token}",
+        "CHEMINVENTORY_URL": "${user_config.url}",
+        "CHEMINVENTORY_ACCESS": "${user_config.access}"
+      }
+    }
+  },
+  "user_config": {
+    "token": {
+      "type": "string",
+      "title": "API token",
+      "description": "Created by a group administrator under Inventory Management > Inventory Tools > API Tokens",
+      "sensitive": true,
+      "required": true
+    },
+    "url": {
+      "type": "string",
+      "title": "Installation URL",
+      "description": "Only for dedicated or self-hosted installations; must use https://",
+      "default": "https://app.cheminventory.net",
+      "required": false
+    },
+    "access": {
+      "type": "string",
+      "title": "Access level",
+      "description": "read-only, additive (create only) or full",
+      "default": "full",
+      "required": false
+    }
+  },
+  "compatibility": {
+    "platforms": ["darwin", "win32"],
+    "runtimes": { "python": ">=3.13" }
+  }
+}

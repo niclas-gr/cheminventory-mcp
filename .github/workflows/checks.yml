@@ -20,3 +20,5 @@ jobs:
           key: prek-${{ hashFiles('.pre-commit-config.yaml') }}
       - run: uv sync --frozen
       - run: uv run --frozen prek run --all-files --show-diff-on-failure
+      # Claude Desktop bundle manifest
+      - run: npx --yes @anthropic-ai/mcpb@2.1.2 validate mcpb/manifest.json
