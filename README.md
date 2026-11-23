@@ -47,6 +47,10 @@ A user with _Group Administrator_ privileges creates tokens on the _Inventory Ma
 
 The token gives the MCP client the full privileges of its user, so tie it to the least-privileged account that suffices, such as a read-only account for lookups. Inventory data that tools return is passed to the AI model and its provider, and text stored in the inventory (names, comments, custom fields, file contents) can contain instructions that the model might follow. Keep confirmation prompts on for destructive tools, and set `CHEMINVENTORY_ACCESS` (see [Configuration](https://github.com/niclas-gr/cheminventory-mcp#configuration)) to hide the tools you do not need. That setting is a second layer on top of the account's privileges: it limits what the AI client can do, but the token itself can still do everything its account can.
 
+## Privacy
+
+The server runs on your computer and keeps no data. It sends requests only to your ChemInventory installation and, for `file_content` and `save_files`, to the file host that ChemInventory's download links point to. Whatever a tool returns goes to your AI client and from there to its model provider, under that provider's terms. There is no telemetry or analytics.
+
 ## Connect an MCP client
 
 All clients start the server with the same command. Replace `<token>` with your [API token](https://github.com/niclas-gr/cheminventory-mcp#api-token).
@@ -62,7 +66,9 @@ Add `--scope user` to make the server available in all projects.
 
 ### Claude Desktop
 
-Open _Settings > Developer > Edit Config_ and add the server to `claude_desktop_config.json`, then restart Claude Desktop:
+Download [`cheminventory-mcp.mcpb`](https://github.com/niclas-gr/cheminventory-mcp/releases/latest/download/cheminventory-mcp.mcpb) from the latest release and open it, or drag it into the Claude Desktop window. Claude Desktop shows an installation dialog that asks for the API token and, optionally, the installation URL and [access level](https://github.com/niclas-gr/cheminventory-mcp#configuration); the token is stored as a secret. uv must be installed (see [Installation](https://github.com/niclas-gr/cheminventory-mcp#installation)).
+
+To configure it by hand instead, open _Settings > Developer > Edit Config_ and add the server to `claude_desktop_config.json`, then restart Claude Desktop:
 
 ```json
 {
@@ -89,6 +95,12 @@ codex mcp add cheminventory --env CHEMINVENTORY_TOKEN=<token> -- uvx cheminvento
 Add the server to `~/.gemini/settings.json` (all projects) or `.gemini/settings.json` (one project), using the same `mcpServers` entry as for Claude Desktop.
 
 ### Other clients and versions
+
+With Node.js installed, [add-mcp](https://www.npmjs.com/package/add-mcp) writes the configuration for many other clients, such as Cursor, VS Code, Windsurf, Cline or Zed, and asks which ones to set up:
+
+```bash
+npx add-mcp "uvx cheminventory-mcp" --env "CHEMINVENTORY_TOKEN=<token>" -g
+```
 
 Any MCP client that starts stdio servers works with `uvx cheminventory-mcp`. To run the latest unreleased code, use `uvx --from git+https://github.com/niclas-gr/cheminventory-mcp cheminventory-mcp`; for a local checkout, use `uv run --directory /path/to/cheminventory-mcp cheminventory-mcp`.
 

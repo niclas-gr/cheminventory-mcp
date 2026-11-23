@@ -1,4 +1,5 @@
-# Publish a v* tag to PyPI, then to the MCP Registry
+# Publish a v* tag to PyPI and the MCP Registry, then as a GitHub release with the
+# Claude Desktop bundle
 name: release
 
 on:
@@ -10,10 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     environment: pypi
     permissions:
-      contents: read
+      contents: write # GitHub release
       id-token: write # trusted publishing to PyPI, login to the MCP Registry
     env:
       MCP_PUBLISHER_VERSION: v1.8.15
+      MCPB_VERSION: 2.1.2
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: astral-sh/setup-uv@v10.3.3
@@ -24,10 +26,12 @@ jobs:
           test "$(uv version --short)" = "$version"
           test "$(jq -r .version server.json)" = "$version"
           test "$(jq -r '.packages[0].version' server.json)" = "$version"
+          test "$(jq -r .version mcpb/manifest.json)" = "$version"
 
       - run: uv sync --frozen
       - run: uv run --frozen prek run --all-files
       - run: uv build
+      - run: npx --yes "@anthropic-ai/mcpb@$MCPB_VERSION" pack mcpb cheminventory-mcp.mcpb
       - run: uv publish --trusted-publishing always --check-url https://pypi.org/simple/
 
       - name: Wait until PyPI serves the release
@@ -58,3 +62,11 @@ jobs:
 
       - run: ./mcp-publisher login github-oidc
       - run: ./mcp-publisher publish
+
+      - name: Create the GitHub release with the bundle and packages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1 ||
+            gh release create "$GITHUB_REF_NAME" --verify-tag --generate-notes
+          gh release upload "$GITHUB_REF_NAME" cheminventory-mcp.mcpb dist/* --clobber
