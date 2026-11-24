@@ -3,18 +3,27 @@ from typing import Annotated, Any
 from pydantic import Field
 
 from cheminventory_mcp.app import ADDITIVE, DESTRUCTIVE, body, client, mcp
+from cheminventory_mcp.client import ChemInventoryError
 
 
 @mcp.tool(annotations=ADDITIVE)
 async def get_substance(
-    name: str,
-    cas: Annotated[str, Field(description="CAS number, or 'N/A' if none")],
+    name: Annotated[
+        str, Field(description="Substance name; not needed with substance_id")
+    ] = "",
+    cas: Annotated[
+        str,
+        Field(description="CAS number, or 'N/A' if none; not needed with substance_id"),
+    ] = "",
     substance_id: Annotated[
         int | None, Field(description="ID of a known substance")
     ] = None,
 ) -> list[dict[str, Any]]:
     """Substance records matching name and CAS number, or the substance with
     substance_id. Creates the substance if it does not exist yet."""
+    if substance_id is None and not (name and cas):
+        raise ChemInventoryError("name and cas are required without substance_id")
+
     return await client().call(
         "container/getsubstance", **body(name=name, cas=cas, substanceid=substance_id)
     )

@@ -9,7 +9,7 @@ from cheminventory_mcp.app import DESTRUCTIVE, READ, Scope, client, mcp
 async def list_watchlists() -> dict[str, Any]:
     """Global and custom (inventory, site, enterprise) watchlists with their search
     terms."""
-    return await client().call("watchlist/load")
+    return await client().call_object("watchlist/load")
 
 
 @mcp.tool(annotations=READ)

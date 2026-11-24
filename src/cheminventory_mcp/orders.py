@@ -67,7 +67,7 @@ async def edit_order(
     custom_fields: CustomFields = None,
 ) -> dict[str, Any]:
     """Update an order request. Returns the saved values."""
-    return await client().call(
+    return await client().call_object(
         "order/edit",
         **body(
             custom_fields,

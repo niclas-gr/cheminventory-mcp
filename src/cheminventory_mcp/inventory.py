@@ -60,7 +60,7 @@ def select_columns(
 async def get_details() -> dict[str, Any]:
     """Account and inventory details: user and inventory IDs, date format, units,
     suppliers, custom fields and the location hierarchy."""
-    return await client().call("general/getdetails")
+    return await client().call_object("general/getdetails")
 
 
 @mcp.tool(annotations=READ)
@@ -111,8 +111,8 @@ async def audit_history(start_date: date, end_date: date) -> list[list[Any]]:
 
 @mcp.tool(annotations=DESTRUCTIVE)
 async def switch_inventory(inventory_id: int) -> None:
-    """Switch the token user's active inventory (site and enterprise licenses only).
-    Rarely needed."""
+    """Switch the token user's active inventory everywhere, including the web
+    interface (site and enterprise licenses only). Rarely needed."""
     await client().call("navbar/switchinventory", newinventory=inventory_id)
 
 
@@ -126,7 +126,7 @@ async def list_locations() -> list[dict[str, Any]]:
 @mcp.tool(annotations=READ)
 async def location_containers(location_id: int) -> dict[str, Any]:
     """Container summaries in a location."""
-    return await client().call("location/containers/get", locationid=location_id)
+    return await client().call_object("location/containers/get", locationid=location_id)
 
 
 @mcp.tool(annotations=DESTRUCTIVE)
@@ -190,7 +190,7 @@ async def search(
             if search_type == "cas":
                 check_cas(term)
 
-            found: dict[str, Any] = await client().call(
+            found: dict[str, Any] = await client().call_object(
                 "search/execute", inventory=inventory, type=search_type, contents=term
             )
         except ChemInventoryError as error:

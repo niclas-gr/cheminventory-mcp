@@ -78,9 +78,18 @@ class ChemInventoryClient:
 
         return payload.get("data")
 
+    async def call_object(self, endpoint: str, **params: Any) -> dict[str, Any]:
+        """Data of an endpoint that returns an object; the API sends an empty
+        result as an empty array."""
+        data: Any = await self.call(endpoint, **params)
+
+        return data or {}
+
     async def table(self, endpoint: str, **params: Any) -> list[dict[str, Any]]:
         """Rows of a columns/rows table response, keyed by column header."""
-        data: dict[str, Any] = await self.call(endpoint, **params)
+        data: dict[str, Any] = await self.call_object(endpoint, **params)
+        if not data:
+            return []
 
         headers: dict[str, str] = {
             column["key"]: column["header"] for column in data["columns"]

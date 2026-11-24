@@ -9,7 +9,7 @@ from cheminventory_mcp.app import DESTRUCTIVE, READ, FieldKind, body, client, mc
 async def list_custom_fields() -> dict[str, Any]:
     """Container and substance custom fields with IDs, data types and allowed
     values."""
-    return await client().call("customfields/get")
+    return await client().call_object("customfields/get")
 
 
 @mcp.tool(annotations=DESTRUCTIVE)

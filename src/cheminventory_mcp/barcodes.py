@@ -15,14 +15,14 @@ async def assigned_barcodes() -> list[dict[str, Any]]:
 async def check_barcode(barcode: str) -> dict[str, Any]:
     """Containers, locations and users that already carry a barcode, keyed by
     barcode value."""
-    return await client().call("barcodes/duplicates/check", barcode=barcode)
+    return await client().call_object("barcodes/duplicates/check", barcode=barcode)
 
 
 @mcp.tool(annotations=READ)
 async def duplicate_barcodes() -> dict[str, Any]:
     """All barcodes assigned more than once, keyed by barcode value
     (administrators only)."""
-    return await client().call("barcodes/duplicates/getall")
+    return await client().call_object("barcodes/duplicates/getall")
 
 
 @mcp.tool(annotations=DESTRUCTIVE)
@@ -31,8 +31,8 @@ async def generate_barcodes(
     count: Annotated[int, Field(ge=1)],
     starting_number: int,
 ) -> list[str]:
-    """Unused barcode values. Saves prefix as the inventory's barcode prefix if
-    permitted."""
+    """Unused barcode values; values already in use are never returned. Saves
+    prefix as the inventory's barcode prefix if permitted."""
     return await client().call(
         "barcodes/generator/createvalues",
         prefix=prefix,
