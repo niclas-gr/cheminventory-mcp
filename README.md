@@ -14,7 +14,7 @@ The server is published on [PyPI](https://pypi.org/project/cheminventory-mcp/) a
 
 **Run on demand (recommended).** MCP clients start the server with `uvx cheminventory-mcp`, which downloads the package into an isolated, cached environment on first use. Nothing else needs to be installed; continue with [Connect an MCP client](https://github.com/niclas-gr/cheminventory-mcp#connect-an-mcp-client).
 
-- Pin a version with `uvx cheminventory-mcp@1.0.1`
+- Pin a version with `uvx cheminventory-mcp@1.0.2`
 - Get the newest release with `uvx cheminventory-mcp@latest`
 
 **Install permanently.** To put a `cheminventory-mcp` command on the `PATH` instead:
