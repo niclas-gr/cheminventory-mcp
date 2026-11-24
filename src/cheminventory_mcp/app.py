@@ -28,7 +28,13 @@ AccountType: TypeAlias = Annotated[
 ]
 CustomFields: TypeAlias = Annotated[
     dict[int, str] | None,
-    Field(description="Container custom field values by custom field ID"),
+    Field(
+        description=(
+            "Container custom field values by custom field ID: dates as YYYY-MM-DD, "
+            "numbers as numeric strings, dropdowns as one allowed value, tags as "
+            "'|value 1|value 2|'"
+        )
+    ),
 ]
 Ids: TypeAlias = Annotated[list[int], Field(min_length=1)]
 

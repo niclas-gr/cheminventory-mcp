@@ -14,7 +14,7 @@ The server is published on [PyPI](https://pypi.org/project/cheminventory-mcp/) a
 
 **Run on demand (recommended).** MCP clients start the server with `uvx cheminventory-mcp`, which downloads the package into an isolated, cached environment on first use. Nothing else needs to be installed; continue with [Connect an MCP client](https://github.com/niclas-gr/cheminventory-mcp#connect-an-mcp-client).
 
-- Pin a version with `uvx cheminventory-mcp@1.0.1`
+- Pin a version with `uvx cheminventory-mcp@1.0.2`
 - Get the newest release with `uvx cheminventory-mcp@latest`
 
 **Install permanently.** To put a `cheminventory-mcp` command on the `PATH` instead:
@@ -125,7 +125,7 @@ The server provides 71 tools for the 70 API endpoints; `export_containers` cover
 | Watchlists | `list_watchlists`, `check_watchlists`, `watchlist_report` |  | `save_watchlist`, `delete_watchlist` |
 | Users | `list_users` | `add_user` | `update_user`, `disable_user`, `reset_user_password` |
 
-`get_substance` creates the substance if it does not exist yet, and `generate_barcodes` can change the inventory's barcode prefix. Some tools need administrator privileges or a site or enterprise license; the API rejects them otherwise.
+`get_substance` creates the substance if it does not exist yet, and `generate_barcodes` can change the inventory's barcode prefix. `switch_inventory` changes the user's active inventory everywhere, including the web interface. Some tools need administrator privileges or a site or enterprise license; the API rejects them otherwise.
 
 `file_content` and `save_files` download files from the file store on the computer that runs the server, so they also work where the AI client itself has no network access. `file_content` returns PDFs and other documents as Markdown or plain text, using PyMuPDF's layout analysis for reading order, headings and tables, with page headers and footers removed unless requested; scanned pages are read with OCR ([RapidOCR](https://github.com/RapidAI/RapidOCR), included). Pages and a character limit can be selected. Text files are returned as text and images as images; other formats such as Word files can only be saved. `save_files` writes files to a local folder and never overwrites existing files.
 

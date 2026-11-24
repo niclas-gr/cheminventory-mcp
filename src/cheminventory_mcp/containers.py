@@ -38,7 +38,9 @@ class NewContainer(BaseModel):
 async def load_container(container_id: int) -> dict[str, Any]:
     """All information for one container, including substance, GHS hazard
     statements, custom fields and files."""
-    return await client().call("container/information/load", containerid=container_id)
+    return await client().call_object(
+        "container/information/load", containerid=container_id
+    )
 
 
 @mcp.tool(annotations=READ)
@@ -97,7 +99,13 @@ async def update_container(
         ),
     ],
     value: Annotated[
-        str, Field(description="New value; for containersize the size, e.g. '250'")
+        str,
+        Field(
+            description=(
+                "New value; for containersize the size, e.g. '250'. Custom fields: "
+                "dates as YYYY-MM-DD, tags as '|value 1|value 2|'"
+            )
+        ),
     ],
     unit: Annotated[
         str | None, Field(description="Unit name for containersize, e.g. 'g'")

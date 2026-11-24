@@ -112,7 +112,7 @@ def write_new(path: Path, data: bytes) -> None:
 @mcp.tool(annotations=READ)
 async def load_file_store(scope: Scope = "inventory") -> dict[str, Any]:
     """File categories and files with uploader and substance link count."""
-    return await client().call("filestore/load", scope=scope)
+    return await client().call_object("filestore/load", scope=scope)
 
 
 @mcp.tool(annotations=READ)

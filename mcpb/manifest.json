@@ -2,7 +2,7 @@
   "manifest_version": "0.4",
   "name": "cheminventory-mcp",
   "display_name": "ChemInventory",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Search and manage a ChemInventory chemical inventory through its API",
   "long_description": "Search containers by name, CAS number or structure, read and update containers, substances, orders, files, users and watchlists, and read safety data sheets from the file store. Not affiliated with ChemInventory. Requires uv (https://docs.astral.sh/uv/).",
   "author": { "name": "Niclas Grocholski" },
@@ -21,7 +21,7 @@
     "entry_point": "",
     "mcp_config": {
       "command": "uv",
-      "args": ["tool", "run", "--no-build", "cheminventory-mcp==1.0.1"],
+      "args": ["tool", "run", "--no-build", "cheminventory-mcp==1.0.2"],
       "env": {
         "CHEMINVENTORY_TOKEN": "${user_config.token}",
         "CHEMINVENTORY_URL": "${user_config.url}",

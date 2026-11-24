@@ -1,6 +1,6 @@
 [project]
 name = "cheminventory-mcp"
-version = "1.0.1"
+version = "1.0.2"
 description = "MCP server for the ChemInventory chemical inventory API"
 readme = "README.md"
 license = "AGPL-3.0-or-later"

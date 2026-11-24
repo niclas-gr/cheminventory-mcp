@@ -355,6 +355,14 @@ CASES: list[Case] = [
     ),
     Case(
         "get_substance",
+        {"substance_id": 382144},
+        "container/getsubstance",
+        {"name": "", "cas": "", "substanceid": 382144},
+        [SUBSTANCE],
+        SAME,
+    ),
+    Case(
+        "get_substance",
         {"name": "Triphenylphosphine", "cas": "N/A", "substance_id": 382144},
         "container/getsubstance",
         {"name": "Triphenylphosphine", "cas": "N/A", "substanceid": 382144},
@@ -987,6 +995,8 @@ async def test_http_error_is_reported(api: respx.MockRouter, session: Client) ->
             },
         ),
         ("load_file_store", {"scope": "world"}),
+        ("get_substance", {"name": "Triphenylphosphine"}),
+        ("get_substance", {}),
         ("search", {"inventory": 9, "search_type": "name", "terms": []}),
         ("search", {"inventory": 9, "search_type": "smiles", "terms": ["CCO"]}),
         ("search", {"inventory": 9, "search_type": "name", "contents": "x"}),
@@ -1094,3 +1104,42 @@ async def test_search_runs_three_at_a_time_in_order(
     assert value(result) == [
         {"term": term, "orders": [], "containers": [term]} for term in terms[:-1]
     ] + [{"term": "fail", "error": "/search/execute: Bad term"}]
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    ("tool", "arguments", "endpoint", "result"),
+    [
+        ("check_barcode", {"barcode": "AB1"}, "barcodes/duplicates/check", {}),
+        ("duplicate_barcodes", {}, "barcodes/duplicates/getall", {}),
+        ("load_container", {"container_id": 1}, "container/information/load", {}),
+        ("list_custom_fields", {}, "customfields/get", {}),
+        ("load_file_store", {}, "filestore/load", {}),
+        ("get_details", {}, "general/getdetails", {}),
+        ("location_containers", {"location_id": 1}, "location/containers/get", {}),
+        ("list_watchlists", {}, "watchlist/load", {}),
+        ("assigned_barcodes", {}, "barcodes/assigned", []),
+        ("recently_added_containers", {}, "container/recentlyadded", []),
+        (
+            "search",
+            {"inventory": 9, "search_type": "name", "terms": ["nothing"]},
+            "search/execute",
+            [{"term": "nothing"}],
+        ),
+    ],
+)
+async def test_empty_result_is_returned_as_empty(
+    tool: str,
+    arguments: dict[str, Any],
+    endpoint: str,
+    result: Any,
+    api: respx.MockRouter,
+    session: Client,
+) -> None:
+    """The API sends every empty result as an empty array."""
+    respond(api, endpoint, [])
+
+    called: CallToolResult = await session.call_tool(tool, arguments)
+
+    assert not called.is_error, text(called)
+    assert value(called) == result
